@@ -4,7 +4,7 @@ $dbhost = "localhost";
 $dbuser = "yotam";
 $dbpass = "1234";
 $dbname = "dbproject";
- $conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
+$conn = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
 
  //testing connection success
  if(mysqli_connect_errno()) {
