@@ -14,15 +14,14 @@ function start ($conn) {
             date_of_birth Date,
             age int(3),
             address VARCHAR(50),
-            phone_number int(10),
             intrest_fk int(6) UNSIGNED,
-            FOREIGN KEY (intrest_fk) REFERENCES SoftwareIntrests(intrest_id)
+            FOREIGN KEY (intrest_fk) REFERENCES SoftwareIntrests(intrest_id) ON DELETE CASCADE
     )";
 
      $PhoneNumbersTable = "CREATE TABLE IF NOT EXISTS PhoneNumbers (
             PhoneNumber int (10) NOT NULL  PRIMARY KEY,
             eng_id_fk int(6) UNSIGNED,
-            FOREIGN KEY (eng_id_fk) REFERENCES Engenieers(eng_id)
+            FOREIGN KEY (eng_id_fk) REFERENCES Engenieers(eng_id) ON DELETE CASCADE
     )";
 
 ////////////////////////////////////////////////////////////////
@@ -31,11 +30,7 @@ function start ($conn) {
             project_name VARCHAR(30) NOT NULL,
             description VARCHAR(100),
             customer_name VARCHAR(30) NOT NULL,
-            start_date Date,
-            mile_stone_fk INT(6) UNSIGNED,
-            devtools_fk INT(6) UNSIGNED,
-            FOREIGN KEY (devtools_fk) REFERENCES Dev_Tools(devtools_id),
-            FOREIGN KEY (mile_stone_fk) REFERENCES Mile_Stones(mile_stone_id)
+            start_date Date
     )";
 
      $devtoolsTable  =  "CREATE TABLE IF NOT EXISTS Dev_Tools (
@@ -43,11 +38,27 @@ function start ($conn) {
             tool_name VARCHAR(30)
     )";
 
+    $DevelopmentStageTable  =  "CREATE TABLE IF NOT EXISTS DevelopmentStages (
+            stage_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
+            stage_name VARCHAR(30)
+    )";
+
+     $devtools_ProjectsTable  =  "CREATE TABLE IF NOT EXISTS DevTools_Projects (
+            project_id_fk INT(6) UNSIGNED,
+            devtools_id_fk INT(6) UNSIGNED,
+            stage_id_fk INT(6) UNSIGNED,
+            FOREIGN KEY (project_id_fk) REFERENCES Projects(project_id) ON DELETE CASCADE,
+            FOREIGN KEY (devtools_id_fk) REFERENCES Dev_Tools(devtools_id) ON DELETE CASCADE,
+            FOREIGN KEY (stage_id_fk) REFERENCES DevelopmentStages(stage_id) ON DELETE CASCADE
+    )";
+
      $MileStonesTable =  "CREATE TABLE IF NOT EXISTS Mile_Stones (
             mile_stone_id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
             description VARCHAR(100),
             price int(5),
-            due_date Date
+            due_date Date,
+            project_id_fk INT(6) UNSIGNED,
+            FOREIGN KEY (project_id_fk) REFERENCES Projects(project_id) ON DELETE CASCADE
     )";
 
 
@@ -61,14 +72,14 @@ function start ($conn) {
     $projects_engenieersTable =  "CREATE TABLE IF NOT EXISTS projects_engenieers (
             project_id_fk INT(6) UNSIGNED,
             eng_id_fk INT(6) UNSIGNED,
-            FOREIGN KEY (project_id_fk) REFERENCES Projects(project_id),
-            FOREIGN KEY (eng_id_fk) REFERENCES Engenieers(eng_id),
+            FOREIGN KEY (project_id_fk) REFERENCES Projects(project_id)  ON DELETE CASCADE ,
+            FOREIGN KEY (eng_id_fk) REFERENCES Engenieers(eng_id)  ON DELETE CASCADE ,
             grade INT(6)
     )";
 
 
 
-    if (mysqli_query($conn, $devtoolsTable) && mysqli_query($conn, $MileStonesTable) && mysqli_query($conn, $SoftwareIntrestsTable)) {
+    if (mysqli_query($conn, $DevelopmentStageTable)  &&  mysqli_query($conn, $devtoolsTable) && mysqli_query($conn, $MileStonesTable) && mysqli_query($conn, $SoftwareIntrestsTable)) {
         echo "Tables created successfully"; 
     } else {
         echo "Error creating table: " . mysqli_error($conn);
@@ -76,12 +87,11 @@ function start ($conn) {
 
 
 
-if (mysqli_query($conn, $EngenieersTable)&& mysqli_query($conn, $ProjectsTable) && mysqli_query($conn, $projects_engenieersTable) && mysqli_query($conn, $PhoneNumbersTable)) {
+if (mysqli_query($conn, $EngenieersTable)&& mysqli_query($conn, $ProjectsTable) && mysqli_query($conn, $projects_engenieersTable) && mysqli_query($conn, $PhoneNumbersTable)&& mysqli_query($conn, $devtools_ProjectsTable) ) {
         echo "Tables created successfully"; 
     } else {
         echo "Error creating table: " . mysqli_error($conn);
     }
-
 
 }
 
